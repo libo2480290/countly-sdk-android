@@ -6,9 +6,9 @@ apply plugin: 'com.android.application'
 
 buildscript {
     repositories {
-        maven {
+        /*maven {
             url  "http://dl.bintray.com/countly/maven"
-        }
+        }*/
 //        flatDir {
 //            dirs 'libs'
 //        }

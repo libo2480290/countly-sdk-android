@@ -3,17 +3,22 @@ package ly.count.android.demo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import ly.count.android.sdk.Countly;
+import ly.count.android.sdk.DeviceId;
 
 
 public class MainActivity extends Activity {
     private Activity activity;
+    private int count;
 
     /** Called when the activity is first created. */
     @Override
@@ -28,7 +33,7 @@ public class MainActivity extends Activity {
 
         /** You should use cloud.count.ly instead of YOUR_SERVER for the line below if you are using Countly Cloud service */
         Countly.sharedInstance()
-                .init(this, "YOUR_SERVER", "YOUR_APP_KEY");
+                .init(this, "http://sdk.bdpdev.bdp.cn", "431badd022d248ae9840a66cb2258e4f96caa4b2", null, DeviceId.Type.OPEN_UDID);
 //                .setLocation(LATITUDE, LONGITUDE);
 //                .setLoggingEnabled(true);
 //        setUserData(); // If UserData plugin is enabled on your server
@@ -57,6 +62,14 @@ public class MainActivity extends Activity {
                 Countly.sharedInstance().setLocation(44.5888300, 33.5224000);
             }
         }, 11000);
+
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                Countly.sharedInstance().recordEvent("timer_task!"+ (++count), count);
+                Log.e(Countly.TAG, "第" + count + "次");
+            }
+        }, 0, 20 * 1000, TimeUnit.MILLISECONDS);
 
         Button button1 = (Button) findViewById(R.id.runtime);
         button1.setOnClickListener(new View.OnClickListener() {

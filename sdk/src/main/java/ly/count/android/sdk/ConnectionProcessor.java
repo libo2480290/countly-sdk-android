@@ -38,6 +38,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -87,11 +88,11 @@ public class ConnectionProcessor implements Runnable {
         conn.setReadTimeout(READ_TIMEOUT_IN_MILLISECONDS);
         conn.setUseCaches(false);
         conn.setDoInput(true);
-        String picturePath = UserData.getPicturePathFromQuery(url);
+        String picturePath = UserData.getPicturePathFromQuery(url);//获取pic文件名称，url解码以便查找文件
         if (Countly.sharedInstance().isLoggingEnabled()) {
             Log.d(Countly.TAG, "Got picturePath: " + picturePath);
         }
-        if(!picturePath.equals("")){
+        if(!picturePath.equals("")){//userdata中的pic文件地址
         	//Uploading files:
         	//http://stackoverflow.com/questions/2793150/how-to-use-java-net-urlconnection-to-fire-and-handle-http-requests
         	
@@ -161,7 +162,7 @@ public class ConnectionProcessor implements Runnable {
                 // When device ID is supplied by OpenUDID or by Google Advertising ID.
                 // In some cases it might take time for them to initialize. So, just wait for it.
                 if (Countly.sharedInstance().isLoggingEnabled()) {
-                    Log.i(Countly.TAG, "No Device ID available yet, skipping request " + storedEvents[0]);
+                    Log.i(Countly.TAG, "No Device ID available yet, skipping request " + URLDecoder.decode(storedEvents[0]));
                 }
                 break;
             }
@@ -189,7 +190,7 @@ public class ConnectionProcessor implements Runnable {
                     final int responseCode = httpConn.getResponseCode();
                     success = responseCode >= 200 && responseCode < 300;
                     if (!success && Countly.sharedInstance().isLoggingEnabled()) {
-                        Log.w(Countly.TAG, "HTTP error response code was " + responseCode + " from submitting event data: " + eventData);
+                        Log.e(Countly.TAG, "HTTP error response code was " + responseCode + " from submitting event data: " + eventData);
                     }
                 }
 
@@ -198,13 +199,14 @@ public class ConnectionProcessor implements Runnable {
                     final JSONObject responseDict = new JSONObject(responseData.toString("UTF-8"));
                     success = responseDict.optString("result").equalsIgnoreCase("success");
                     if (!success && Countly.sharedInstance().isLoggingEnabled()) {
-                        Log.w(Countly.TAG, "Response from Countly server did not report success, it was: " + responseData.toString("UTF-8"));
+                        Log.e(Countly.TAG, "Response from Countly server did not report success, it was: " + responseData.toString("UTF-8"));
                     }
                 }
 
                 if (success) {
                     if (Countly.sharedInstance().isLoggingEnabled()) {
-                        Log.d(Countly.TAG, "ok ->" + eventData);
+//                        Log.d(Countly.TAG, "ok ->" + eventData);
+                        Log.d(Countly.TAG, "ok ->" + URLDecoder.decode(eventData,"UTF-8"));
                     }
 
                     // successfully submitted event data to Count.ly server, so remove
@@ -218,7 +220,7 @@ public class ConnectionProcessor implements Runnable {
             }
             catch (Exception e) {
                 if (Countly.sharedInstance().isLoggingEnabled()) {
-                    Log.w(Countly.TAG, "Got exception while trying to submit event data: " + eventData, e);
+                    Log.e(Countly.TAG, "Got exception while trying to submit event data: " + eventData, e);
                 }
                 // if exception occurred, stop processing, let next tick take care of retrying
                 break;
