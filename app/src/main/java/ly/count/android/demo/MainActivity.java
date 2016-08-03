@@ -1,6 +1,7 @@
 package ly.count.android.demo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,13 +20,14 @@ import ly.count.android.sdk.DeviceId;
 public class MainActivity extends Activity {
     private Activity activity;
     private int count;
-
+    private Button btnEnterSecond;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         activity = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        bindEvent();
 
         Countly.sharedInstance().setLoggingEnabled(true);
 
@@ -37,39 +39,45 @@ public class MainActivity extends Activity {
 //                .setLocation(LATITUDE, LONGITUDE);
 //                .setLoggingEnabled(true);
 //        setUserData(); // If UserData plugin is enabled on your server
-//        enableCrashTracking();
+       // Countly.sharedInstance().enableCrashReporting();
+        Countly.sharedInstance().setViewTracking(true);
 
-
-        Countly.sharedInstance().recordEvent("test", 1);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Countly.sharedInstance().recordEvent("test2", 1, 2);
-            }
-        }, 5000);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Countly.sharedInstance().recordEvent("test3");
-            }
-        }, 10000);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Countly.sharedInstance().setLocation(44.5888300, 33.5224000);
-            }
-        }, 11000);
-
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                Countly.sharedInstance().recordEvent("timer_task!"+ (++count), count);
-                Log.e(Countly.TAG, "第" + count + "次");
-            }
-        }, 0, 20 * 1000, TimeUnit.MILLISECONDS);
+        Countly.sharedInstance().addCrashLog("crashlog--libo");
+        HashMap<String, String> segmentation = new HashMap<String, String>();
+        segmentation.put("location", "Activity");
+        segmentation.put("app_version", "1.0");
+        segmentation.put("name", "libo");
+        Countly.sharedInstance().setCustomCrashSegments(segmentation);
+//        Countly.sharedInstance().recordEvent("test", 1);
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Countly.sharedInstance().recordEvent("test2", 1, 2);
+//            }
+//        }, 5000);
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Countly.sharedInstance().recordEvent("test3");
+//            }
+//        }, 10000);
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Countly.sharedInstance().setLocation(44.5888300, 33.5224000);
+//            }
+//        }, 11000);
+//
+//        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
+//            @Override
+//            public void run() {
+//                Countly.sharedInstance().recordEvent("timer_task!"+ (++count), count);
+//                Log.e(Countly.TAG, "第" + count + "次");
+//            }
+//        }, 0, 20 * 1000, TimeUnit.MILLISECONDS);
 
         Button button1 = (Button) findViewById(R.id.runtime);
         button1.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +134,7 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
     }
 
     public void setUserData(){
@@ -190,4 +199,14 @@ public class MainActivity extends Activity {
         super.onStop();
     }
 
+    private void bindEvent(){
+        btnEnterSecond = (Button) findViewById(R.id.btn_enter_second);
+        btnEnterSecond.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), SecondActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 }

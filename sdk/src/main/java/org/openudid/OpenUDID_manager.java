@@ -58,7 +58,7 @@ public class OpenUDID_manager implements ServiceConnection{
 				final String _openUDID = reply.readString();
 				if (_openUDID != null) { //if valid OpenUDID, save it
 					if (LOG) Log.d(TAG, "Received " + _openUDID);
-
+                    // FIXME: 16/8/3  bug｀
 					if (mReceivedOpenUDIDs.containsKey(_openUDID)) mReceivedOpenUDIDs.put(_openUDID, mReceivedOpenUDIDs.get(_openUDID) + 1);
 					else mReceivedOpenUDIDs.put(_openUDID, 1);
 						
@@ -112,11 +112,11 @@ public class OpenUDID_manager implements ServiceConnection{
                 startService();	// ignore this one, and start next one
             }
 		} else { //No more service to test
-			
+			// FIXME: 16/8/3 下面函数也没用
 			getMostFrequentOpenUDID(); //Choose the most frequent
 	
 			if (OpenUDID == null) //No OpenUDID was chosen, generate one			
-				generateOpenUDID();
+				generateOpenUDID(); //如果从sharedpreferences读取为空，则一定是通过该方法来创建openudid
 			if (LOG) Log.d(TAG, "OpenUDID: " + OpenUDID);
 
 			storeOpenUDID();//Store it locally

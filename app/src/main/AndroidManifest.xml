@@ -34,6 +34,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".SecondActivity"/>
+
         <service android:name="org.openudid.OpenUDID_service" android:exported="false">
             <intent-filter>
                 <action android:name="org.OpenUDID.GETUDID" />

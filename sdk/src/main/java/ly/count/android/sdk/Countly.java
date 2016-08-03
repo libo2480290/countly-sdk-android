@@ -728,6 +728,7 @@ public class Countly {
     private boolean appLaunchDeepLink = true;
 
     public static void onCreate(Activity activity) {
+        //可不调用，deepLink为发送到服务端的DeviceInfo
         Intent launchIntent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName());
 
         if (sharedInstance().isLoggingEnabled()) {
